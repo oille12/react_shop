@@ -2,6 +2,8 @@ import logo from './logo.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Col, Row, Nav, Navbar, Button } from 'react-bootstrap';
 import './App.css';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import DetailPage from './pages/Detail';
 
 // 자바스크립트 파일은 확장자명 생략 (.js 안붙여도 됨)
 // 다른 자바스크립트에서 export한건 import로 가져와서 변수처럼 사용 -> {변수명}
@@ -12,47 +14,52 @@ import {num1, num2, num3} from './data';
 import mainBG from './main.jpeg';
 import { useState } from 'react';
 
-
-
+// 라우터는 창 새로고침이 아니라 재렌더링 방식을 사용 (빠름)
 function App() {
   // css를 제공해주는 사이트 : React Bootstrap
   // install react-bootstrap bootstrap
 
   let [items, setItems] = useState(data);
   let [photo, setPhoto] = useState(['/monitor.jpeg', '/mouse.png', '/keyboard.jpeg']);
+  let navigate = useNavigate();
 
   return (
     <div className="App">
       <Navbar bg="dark" data-bs-theme="dark">
         <Container>
-          <Navbar.Brand href="#home"><img src='./logo.png' width={'140px'} /></Navbar.Brand>
+          <Navbar.Brand href="/"><img src='./logo.png' width={'140px'} /></Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link href="#home">홈</Nav.Link>
-            <Nav.Link href="#features">상세페이지</Nav.Link>
-            <Nav.Link href="#pricing">About</Nav.Link>
+            <Nav.Link onClick={()=>{navigate('/')}}>홈</Nav.Link>
+            <Nav.Link onClick={()=>{navigate('/detail')}}>상세페이지</Nav.Link>
+            <Nav.Link onClick={()=>{navigate('/about')}}>About</Nav.Link>
+            <Nav.Link onClick={()=>{navigate(-1)}}>뒤로가기</Nav.Link>
+            <Nav.Link onClick={()=>{navigate(1)}}>앞으로가기</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
 
-      <div className={'main-bg'}>
+      <Routes>
+        <Route path='/' element={
+        <>
+          <div className={'main-bg'}></div>
+          <br/>
+          <Container>
+            <Row>
+              {
+                items.map((e, idx) => (
+                  <ItemCol key={e} data={e} img={photo[idx]} />
+                ))
+              }
+            </Row>
+          </Container>
+        </>
+        }></Route>
         
-      </div>
-      <br/>
+        <Route path='/detail' element={<DetailPage items={items}/>}></Route>       
+      </Routes>
 
-      <Container>
-      <Row>
-        {items.map((item, index) => (
-          <ItemCol key={index} data={item} img={photo[index]} />
-        ))}
-        {/* <ItemCol data={data[0]} img={'/monitor.jpeg'} />
-        <ItemCol data={data[1]} img={'/mouse.png'} />
-        <ItemCol data={data[2]} img={'/keyboard.jpeg'} /> */}
-      </Row>
-    </Container>
-
-      <br/>
-      <Button variant="primary">기본 버튼</Button>{' '}
     </div>
+
   );
 }
 
